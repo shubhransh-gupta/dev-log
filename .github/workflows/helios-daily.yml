@@ -1,0 +1,50 @@
+# Helios daily workflow — copied into your repo by `helios init`
+# cron is always UTC. Set TZ below to your own zone so the log is filed under
+# the date you are actually living, then pick a cron time that lands in your
+# morning. Example: 01:30 UTC is 07:00 in Asia/Kolkata.
+
+name: Helios Daily
+
+on:
+  schedule:
+    # 01:30 UTC == 07:00 Asia/Kolkata
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  helios:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Kolkata
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Runners have no git identity, so git would otherwise invent one like
+      # runner@fv-az123 and the commit would earn you no contribution credit.
+      # The owner's noreply address is derived at runtime from the GitHub API,
+      # so no identity is hardcoded in this file.
+      - name: Configure identity
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          owner='${{ github.repository_owner }}'
+          id=$(gh api "users/$owner" --jq .id)
+          git config user.name "$owner"
+          git config user.email "$id+$owner@users.noreply.github.com"
+
+      - name: Install Helios
+        run: npm install github:shubhransh-gupta/helios
+
+      - name: Run morning routine
+        run: npx helios run
+
+      # actions/checkout leaves an authenticated remote, so no token needed here.
+      - name: Push
+        run: git push

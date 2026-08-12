@@ -1,0 +1,56 @@
+# Helios configuration
+# Docs: https://github.com/shubhransh-gupta/helios
+#
+# This file is committed to your repository. Never put a GitHub token, API key,
+# or password in it. Helios never asks for one: the workflow uses the built-in
+# GITHUB_TOKEN, and local runs use whatever git credentials you already have.
+
+# Where daily logs are written (relative to repo root)
+logs_dir: logs
+
+# Leave `author` unset (recommended). Helios then uses your system git config,
+# so your identity stays in ~/.gitconfig instead of a file you commit.
+#
+# Keep your address private and still get contribution credit by pointing git
+# at your GitHub noreply address:
+#   git config --global user.email "<id>+<username>@users.noreply.github.com"
+#
+# Only set this if a repo needs a different identity than your git config.
+# Whatever you put here is committed and public.
+# author:
+#   name: Your Name
+#   email: you@example.com
+
+# Commit message template. {date} is replaced with YYYY-MM-DD
+commit_message: "chore(helios): daily log {date}"
+
+# Branch to commit on
+branch: main
+
+# What a Helios commit is allowed to stage:
+#   logs -> only logs_dir, so unrelated work in progress is never swept in
+#   all  -> the whole repo (use when hooks reformat or fix files you want committed)
+stage: logs
+
+# Auto-push after commit (local runs only; GitHub Actions handles its own push)
+auto_push: false
+
+# Optional shell commands to run before creating today's log
+# pre_hooks:
+#   - npm test
+#   - npm run lint
+
+# Optional shell commands after log creation, before commit
+# post_hooks:
+#   - npm run format
+
+# Log entry template fields (shown in new daily files)
+log_template:
+  title: "Daily Dev Log"
+  sections:
+    - name: Focus
+      prompt: "What did you work on today?"
+    - name: Learned
+      prompt: "One thing you learned or explored"
+    - name: Links
+      prompt: "PRs, articles, repos worth bookmarking"
